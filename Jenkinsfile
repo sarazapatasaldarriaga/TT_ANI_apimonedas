@@ -5,6 +5,7 @@ pipeline{
         DOCKER_IMAGE = 'apimonedas'
         CONTAINER_NAME = 'dockerapimonedas'
         DOCKER_NETWORK = 'dockerdbmonedas_red'
+        DOCKER_DB = 'dockerdbmonedas_red'
         DOCKER_BUILD_DIR = 'presentacion'
         HOST_PORT = '8081'
         CONTAINER_PORT = '8082'
@@ -23,10 +24,10 @@ pipeline{
                 }
             }
         }
-        stage('Ccreación de la imagen'){
+        stage('Desplegar contenedor'){
             steps{
                 dir("${DOCKER_BUILD_DIR}"){
-                    bat "docker build . -t ${DOCKER_IMAGE}"
+                    bat "docker run –-name ${CONTAINER_NAME}  --network ${CDOCKER_NETWORK} -p  ${HOST_PORT}:${CONTAINER_PORT} -d ${DOCKER_IMAGE}"
                 }
             }
         }
