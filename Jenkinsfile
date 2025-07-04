@@ -6,8 +6,8 @@ pipeline{
         CONTAINER_NAME = 'dockerapimonedas'
         DOCKER_NETWORK = 'dockerdbmonedas_red'
         DOCKER_BUILD_DIR = 'presentacion'
-        HOST_PORT = '8081'
-        CONTAINER_PORT = '8082'
+        HOST_PORT = '9080'
+        CONTAINER_PORT = '8080'
     }
 
     stages{
