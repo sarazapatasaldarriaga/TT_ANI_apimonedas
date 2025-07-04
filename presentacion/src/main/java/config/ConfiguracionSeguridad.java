@@ -42,7 +42,7 @@ public class ConfiguracionSeguridad {
                                         "/swagger-resources/**",
                                         "/webjars/**")
                                 .permitAll()
-                                // .requestMatchers("/api/monedas/**").permitAll()
+                                .requestMatchers("/api/monedas/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterAfter(filtro, UsernamePasswordAuthenticationFilter.class)
                 .build();
