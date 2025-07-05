@@ -11,18 +11,34 @@ pipeline{
     }
 
     stages{
-        stage('Complicacion Maven'){
+        /*stage('Complicacion Maven'){
             steps{
                 bat 'mvn clean package -Dskiptests'
             }
-        }
+        }*/
         stage('Creación de la imagen'){
             steps{
-                dir("${DOCKER_BUILD_DIR}"){
+               // dir("${DOCKER_BUILD_DIR}"){
                     bat "docker build . -t ${DOCKER_IMAGE}"
-                }
+               // }
             }
         }
+
+        stage('Limpiar contenedor existente'){
+            steps{
+                script{
+                   /* catchError(buildResult: 'SUCCESS', stageResult:'UNSTABLE'){
+                        bat """
+                        docker container inspect ${CONTAINER_NAME} >nul 2>&1 && (
+                        docker contaienr stop ${CONTAINER_NAME}
+                        docker container rm ${CONTAINER_NAME}
+                        ) || echo "No existe el contenedor '${CONTAINER_NAME}'."
+                    */
+                     bat 'docker rm -f dockerapimonedas || exit 0'
+                    }
+                }
+            }
+    
         stage('Desplegar contenedor'){
             steps{
                 dir("${DOCKER_BUILD_DIR}"){
