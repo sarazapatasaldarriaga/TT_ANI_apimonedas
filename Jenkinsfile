@@ -34,7 +34,11 @@ pipeline{
                         docker container rm ${CONTAINER_NAME}
                         ) || echo "No existe el contenedor '${CONTAINER_NAME}'."
                     */
-                     bat 'docker rm -f dockerapimonedas || exit 0'
+                    bat """
+                    docker ps -a -q -f "name=dockerapimonedas" > tmp.txt
+                    for /f %%i in (tmp.txt) do docker rm -f %%i
+                    del tmp.txt
+                    """
                     }
                 }
             }
