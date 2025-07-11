@@ -31,7 +31,8 @@ pipeline {
                 steps {
                     script {
                         bat """
-                        kubectl rollout status statefulset/bdmonedas-sfs-tt
+                        kubectl apply -f _manifiestos\\infraestructura\\
+                        echo Exit code: %ERRORLEVEL%
                         """
                     }
                 }
