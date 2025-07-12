@@ -3,8 +3,6 @@ kind: Job
 metadata:
   name: iniciar-bdmonedas-tt
 spec:
-  ttlSecondsAfterFinished: 0
-  backoffLimit: 0
   template:
     spec:
       restartPolicy: Never
@@ -21,17 +19,15 @@ spec:
           DB_USER="postgres"
           DB_NAME_POSTGRES="postgres"
           DB_NAME_MONEDAS="monedas"
-          MAX_RETRIES=90 # Aumentado el número de reintentos para dar más tiempo a la DB
-          RETRY_INTERVAL=2 # Intervalo de espera en segundos
+          MAX_RETRIES=90
+          RETRY_INTERVAL=2
 
           for i in $(seq 1 $MAX_RETRIES); do
             PGPASSWORD="${PGPASSWORD}" psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME_POSTGRES" -c '\q' &>/dev/null
             if [ $? -eq 0 ]; then
               break
             fi
-
             sleep $RETRY_INTERVAL
-
             if [ $i -eq  $MAX_RETRIES ]; then
               exit 1
             fi
@@ -44,9 +40,7 @@ spec:
             if [ $? -eq 0 ]; then
               break
             fi
-
             sleep $RETRY_INTERVAL
-
             if [ $i -eq  $MAX_RETRIES ]; then
               exit 1
             fi
@@ -54,6 +48,7 @@ spec:
 
           PGPASSWORD="${PGPASSWORD}" psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME_MONEDAS" -f /scripts/DDL_monedas.sql &>/dev/null
           PGPASSWORD="${PGPASSWORD}" psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME_MONEDAS" -f /scripts/DML_monedas.sql &>/dev/null
+
         env:
         - name: PGPASSWORD
           valueFrom:
@@ -64,11 +59,6 @@ spec:
         - name: scripts
           mountPath: /scripts
       volumes:
-        - name: scripts
-          configMap:
-            name: bdmonedas-cm-iniciar
-
-
-
-
-          
+      - name: scripts
+        configMap:
+          name: bdmonedas-cm-iniciar
