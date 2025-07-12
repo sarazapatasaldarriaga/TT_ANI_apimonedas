@@ -3,7 +3,9 @@ kind: Job
 metadata:
   name: iniciar-bdmonedas-tt
 spec:
-  restartPolicy: Never
+  backoffLimit: 0
+  template:
+    restartPolicy: Never
   containers:
   - name: iniciar-bdmonedas
     image: postgres:16
@@ -67,3 +69,4 @@ spec:
 
 
 
+      
