@@ -6,6 +6,5 @@ spec:
   selector: 
     app: bdmonedas-tt
   ports:
-    - port: 5432
-      targetPort: 5433 
+    - port: 5445
   type: ClusterIP
