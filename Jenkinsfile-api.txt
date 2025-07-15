@@ -18,13 +18,15 @@ pipeline{
         stage('Limpiar datos previos') {
             steps {
                 script {
-                    bat """
-                    kubectl delete hpa apimonedas-hpa-tt --ignore-not-found
-                    kubectl delete deployment apimonedas-deployment-tt --ignore-not-found
-                    kubectl delete service apimonedas-servicio-tt --ignore-not-found
-                    kubectl delete configmap apimonedas-cm-tt --ignore-not-found
-                    """
-                }
+                    withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG_FILE')]) {
+                        bat "set KUBECONFIG=%KUBE_CONFIG_FILE%"
+                        bat """
+                            kubectl delete hpa apimonedas-hpa-tt --ignore-not-found
+                            kubectl delete deployment apimonedas-deployment-tt --ignore-not-found
+                            kubectl delete service apimonedas-servicio-tt --ignore-not-found
+                            kubectl delete configmap apimonedas-cm-tt --ignore-not-found
+                        """
+                    }
             }
         }
 
@@ -41,14 +43,15 @@ pipeline{
         }
 
         stage('Aplicar Manifiestos Api') {
-                steps {
-                    script {
-                        bat """
-                            kubectl apply -f _manifiestos\\api\\
-                        """
+            steps {
+                script {
+                    withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG_FILE')]) {
+                        bat "set KUBECONFIG=%KUBE_CONFIG_FILE%"
+                        bat "kubectl apply -f _manifiestos/api/"
                     }
                 }
             }
+        }
 
         stage('Esperar Pod Api listo') {
                 steps {
