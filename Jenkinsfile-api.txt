@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG_FILE')]) {
-                        bat "set KUBECONFIG=%KUBE_CONFIG_FILE%"
+                        bat "kubectl --kubeconfig=${KUBE_CONFIG_FILE} cluster-info"
                         bat """
                             kubectl delete hpa apimonedas-hpa-tt --ignore-not-found
                             kubectl delete deployment apimonedas-deployment-tt --ignore-not-found
@@ -45,8 +45,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG_FILE')]) {
-                        bat "set KUBECONFIG=%KUBE_CONFIG_FILE%"
-                        bat "kubectl apply -f _manifiestos/api/"
+                        bat "kubectl --kubeconfig=${KUBE_CONFIG_FILE} apply -f _manifiestos/api/"
                     }
                 }
             }
@@ -56,8 +55,7 @@ pipeline {
             steps {
                 script {
                     bat """
-                        kubectl apply -f _manifiestos\\api\\
-                        echo Exit code: %ERRORLEVEL%
+                        kubectl wait --for=condition=available --timeout=60s deployment/apimonedas-deployment-tt
                     """
                 }
             }
