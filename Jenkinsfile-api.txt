@@ -33,7 +33,6 @@ pipeline{
         stage('Registrar imagen'){
             steps{
                 withCredentials([usernamePassword(credentialsId: '200', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
                     bat """
                         docker push ${DOCKER_IMAGE}
                         docker logout
