@@ -27,10 +27,46 @@ pipeline{
                 }
             }
         }
-        
-        stage('Ejecutar contenedor'){
+
+        stage('Registrar imagen'){
             steps{
-                bat "docker run --network ${DOCKER_NETWORK} --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} -d ${DOCKER_IMAGE}"
+                withCredentials([usernamePassword(credentialsId: '200', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    bat """
+                        docker push ${DOCKER_IMAGE}
+                        docker logout
+                    """
+                }
+            }
+        }
+
+        stage('Aplicar Manifiestos Api') {
+                steps {
+                    script {
+                        bat """
+                            kubectl apply -f _manifiestos\\api\\
+                        """
+                    }
+                }
+            }
+
+        stage('Esperar Pod Api listo') {
+                steps {
+                    script {
+                        bat """
+                        kubectl apply -f _manifiestos\\api\\
+                        echo Exit code: %ERRORLEVEL%
+                        """
+                    }
+                }
+            }
+        
+        stage('Despliegue de api'){
+            steps{
+                bat """
+                    kubectl set image deployment/apimonmedas-deployment-tt ${DOCKER_IMAGE} --record 
+                    kubectl rollout status deplopoy/apimonedas-deployment-tt
+                """
             }
         }
     }
