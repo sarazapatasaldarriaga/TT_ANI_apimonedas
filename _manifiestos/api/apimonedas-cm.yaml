@@ -5,3 +5,4 @@ metadata:
 data:
   SPRING_DATASOURCE_URL: jdbc:postgresql://bdmonedas-servicio-tt:5433/monedas
   SPRING_DATASOURCE_USERNAME: postgres
+  SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
