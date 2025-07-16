@@ -1,37 +1,31 @@
-pipeline {
+pipeline{
     agent any
 
-    environment {
+    environment{
         DOCKER_IMAGE = 'sarazapatasaldrriaga/apimonedas-tt'
-        KUBE_CONFIG = credentials('300')
+        KUBECONFIG = credentials('300')
     }
 
-    stages {
-
-        stage('Construir imagen') {
-            steps {
+    stages{
+        stage('Construir imagen'){
+            steps{
                 bat "docker build . -t ${DOCKER_IMAGE}"
             }
         }
-
         stage('Limpiar datos previos') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG_FILE')]) {
-                        bat "kubectl --kubeconfig=${KUBE_CONFIG_FILE} cluster-info"
-                        bat """
-                            kubectl delete hpa apimonedas-hpa-tt --ignore-not-found
-                            kubectl delete deployment apimonedas-deployment-tt --ignore-not-found
-                            kubectl delete service apimonedas-servicio-tt --ignore-not-found
-                            kubectl delete configmap apimonedas-cm-tt --ignore-not-found
-                        """
-                    }
+                    bat """
+                    kubectl delete hpa apimonedas-hpa-tt --ignore-not-found
+                    kubectl delete deployment apimonedas-deployment-tt --ignore-not-found
+                    kubectl delete service apimonedas-servicio-tt --ignore-not-found
+                    kubectl delete configmap apimonedas-cm-tt --ignore-not-found
+                    """
                 }
             }
         }
-
-        stage('Registrar imagen') {
-            steps {
+        stage('Registrar imagen'){
+            steps{
                 withCredentials([usernamePassword(credentialsId: '200', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
                         docker push ${DOCKER_IMAGE}
@@ -40,35 +34,23 @@ pipeline {
                 }
             }
         }
-
-        stage('Aplicar Manifiestos Api') {
-            steps {
-                script {
-                    withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG')]) {
-                        bat """
-                        kubectl --kubeconfig=\"${KUBE_CONFIG}\" apply -f _manifiestos/api/
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Esperar Pod Api listo') {
+        stage('Aplicar Manifiestos API') {
             steps {
                 script {
                     bat """
-                        kubectl wait --for=condition=available --timeout=60s deployment/apimonedas-deployment-tt
+                    kubectl apply -f _manifiestos\\api\\
                     """
                 }
             }
         }
-
-        stage('Despliegue de api') {
-            steps {
-                bat """
-                    kubectl set image deployment/apimonedas-deployment-tt apimonedas=${DOCKER_IMAGE} --record
-                    kubectl rollout status deployment/apimonedas-deployment-tt
-                """
+        stage('Despliegue'){
+            steps{
+                script {
+                    bat """
+                        kubectl set image deployment/apimonedas-deployment-tt ${DOCKER_IMAGE} --record
+                        kubectl rollout status deployment/apimonedas-deployment-tt
+                    """
+                }
             }
         }
     }
