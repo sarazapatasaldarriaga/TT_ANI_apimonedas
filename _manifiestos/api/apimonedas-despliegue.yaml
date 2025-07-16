@@ -14,11 +14,11 @@ spec:
     spec:
       containers:
         - name: apimonedas
-          image: sarazapatasaladrriaga/apimonedas-tt:latest
+          image: sarazapatasaldarriaga/apimonedas-tt:latest
           ports:
             - containerPort: 8080
           envFrom:
-          - configMapRef:
+            - configMapRef:
                 name: apimonedas-cm-tt
-          - secretRef:
-              name: bdmonedas-secretos-tt
+            - secretRef:
+                name: bdmonedas-secretos-tt

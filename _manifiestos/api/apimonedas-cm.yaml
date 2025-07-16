@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apimonedas-cm-tt
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://bdmonedas-servicio-tt:5432/monedas
+  SPRING_DATASOURCE_USERNAME: postgres
