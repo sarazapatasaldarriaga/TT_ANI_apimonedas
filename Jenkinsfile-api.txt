@@ -1,56 +1,53 @@
-pipeline{
+pipeline {
     agent any
 
-    environment{
+    environment {
         DOCKER_IMAGE = 'sarazapatasaldarriaga/apimonedas-tt'
-        KUBECONFIG = credentials('300')
+        KUBECONFIG = credentials('300') // Asume que este ID de credencial está bien configurado para kubectl
     }
 
-    stages{
-        stage('Construir imagen'){
-            steps{
-                bat "docker build . -t ${DOCKER_IMAGE}"
+    stages {
+        stage('Construir imagen') {
+            steps {
+                bat "docker build . -t ${DOCKER_IMAGE}:latest"
             }
         }
+
         stage('Limpiar datos previos') {
             steps {
-                script {
-                    bat """
+                bat """
                     kubectl delete hpa apimonedas-hpa-tt --ignore-not-found
                     kubectl delete deployment apimonedas-deployment-tt --ignore-not-found
                     kubectl delete service apimonedas-servicio-tt --ignore-not-found
                     kubectl delete configmap apimonedas-cm-tt --ignore-not-found
-                    """
-                }
+                """
             }
         }
-        stage('Registrar imagen'){
-            steps{
+
+        stage('Registrar imagen') {
+            steps {
                 withCredentials([usernamePassword(credentialsId: '200', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
-                        docker push ${DOCKER_IMAGE}
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        docker push ${DOCKER_IMAGE}:latest
                         docker logout
                     """
                 }
             }
         }
+
         stage('Aplicar Manifiestos API') {
             steps {
-                script {
-                    bat """
-                    kubectl apply -f _manifiestos\\api\\
-                    """
-                }
+                bat "kubectl apply -f _manifiestos\\api\\"
             }
         }
-        stage('Despliegue'){
-            steps{
-                script {
-                    bat """
-                       bat "kubectl set image deployment/apimonedas-deployment-tt apimonedas=sarazapatasaldarriaga/apimonedas-tt:latest"
-                        kubectl rollout status deployment/apimonedas-deployment-tt
-                    """
-                }
+
+        stage('Despliegue') {
+            steps {
+                bat """
+                    kubectl set image deployment/apimonedas-deployment-tt apimonedas=${DOCKER_IMAGE}:latest
+                    kubectl rollout status deployment/apimonedas-deployment-tt
+                """
             }
         }
     }
