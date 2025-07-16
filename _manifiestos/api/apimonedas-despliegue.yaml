@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: apimonedas
-          image: sarazapatasaldrriaga/apimonedas-tt:latest
+          image: sarazapatasaladrriaga/apimonedas-tt:latest
           ports:
             - containerPort: 8080
           envFrom:
