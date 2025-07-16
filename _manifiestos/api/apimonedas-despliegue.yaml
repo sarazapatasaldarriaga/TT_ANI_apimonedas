@@ -2,23 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apimonedas-deployment-tt
-  spec:
-    replicas: 2
-  selector:
-    matchLabels: 
+spec:
+  replicas: 2
+selector:
+  matchLabels: 
+    app: apimonedas-tt
+template:
+  metadata:
+    labels:
       app: apimonedas-tt
-  template:
-    metadata:
-      labels:
-        app: apimonedas-tt
-    spec:
-      containers:
-        - name: apimonedas
-          image: sarazapatasaldarriaga/apimonedas-tt:latest
-          ports: 
-            - containerPort: 8080
-          envForm:
-            - configMapref:
-                name: apimonedas-cm-tt
-            - secretRef: bdmonedas-secretos-tt
+  spec:
+    containers:
+      - name: apimonedas
+        image: sarazapatasaldarriaga/apimonedas-tt:latest
+        ports: 
+          - containerPort: 8080
+        envForm:
+          - configMapref:
+              name: apimonedas-cm-tt
+          - secretRef: bdmonedas-secretos-tt
 
