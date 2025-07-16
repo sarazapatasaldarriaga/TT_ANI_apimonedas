@@ -22,3 +22,9 @@ spec:
                 name: apimonedas-cm-tt
             - secretRef:
                 name: bdmonedas-secretos-tt
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bdmonedas-secretos-tt
+                  key: BDMONEDAS_PASSWORD
