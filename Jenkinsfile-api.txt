@@ -44,9 +44,9 @@ pipeline {
         stage('Aplicar Manifiestos Api') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG_FILE')]) {
+                    withCredentials([file(credentialsId: '300', variable: 'KUBE_CONFIG')]) {
                         bat """
-                        kubectl --kubeconfig=\"${KUBE_CONFIG_FILE}\" apply -f _manifiestos/api/
+                        kubectl --kubeconfig=\"${KUBE_CONFIG}\" apply -f _manifiestos/api/
                         """
                     }
                 }
