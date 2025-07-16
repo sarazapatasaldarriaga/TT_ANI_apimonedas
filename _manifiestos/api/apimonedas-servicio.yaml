@@ -7,6 +7,6 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
-      NodePort: 30080 # puerto para poder ver desde afuera
+      nodePort: 30080 # puerto para poder ver desde afuera
   selector:
     app: apimonedas-tt
