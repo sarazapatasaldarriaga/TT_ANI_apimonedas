@@ -8,7 +8,7 @@
   "containerDefinitions": [
     {
       "name": "api-monedas-container",
-      "image": "500532068218.dkr.ecr.us-east-2.amazonaws.com/api-monedas:latest",
+      "image": "052737073980.dkr.ecr.us-east-2.amazonaws.com/monedas-api-ecr:00a3103",
       "portMappings": [
         {
           "containerPort": 8080,
